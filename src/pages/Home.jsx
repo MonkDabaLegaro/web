@@ -1,4 +1,10 @@
 import { Link } from 'react-router-dom';
+import logo from '../image/logo.png';
+import checkmark from '../image/Checkmark.png';
+import chile from '../image/Chile.png';
+import clock from '../image/clock.png';
+import folder from '../image/folder.png';
+import list from '../image/list.png';
 
 export default function Home() {
   return (
@@ -6,7 +12,7 @@ export default function Home() {
       <header className="main-header">
         <div className="header-content">
           <div className="header-logo">
-            <img src="/image/logo.png" alt="Logo" className="logo-image" />
+            <img src={logo} alt="Logo" className="logo-image" />
           </div>
           <h1>Sistema de Asistencia Vehicular</h1>
         </div>
@@ -19,26 +25,26 @@ export default function Home() {
 
           <div className="benefits">
             <div className="benefit">
-              <img src="/image/Checkmark.png" alt="Rápida" className="benefit-icon" />
+              <img src={checkmark} alt="Rápida" className="benefit-icon" />
               <span>Rápida atención</span>
             </div>
             <div className="benefit">
-              <img src="/image/Chile.png" alt="Nacional" className="benefit-icon" />
+              <img src={chile} alt="Nacional" className="benefit-icon" />
               <span>Cobertura nacional</span>
             </div>
             <div className="benefit">
-              <img src="/image/clock.png" alt="24/7" className="benefit-icon" />
+              <img src={clock} alt="24/7" className="benefit-icon" />
               <span>24/7</span>
             </div>
           </div>
 
           <div className="btn-group">
             <Link to="/login" className="btn btn-primary">
-              <img src="/image/folder.png" alt="Registrar" className="btn-icon" />
+              <img src={folder} alt="Registrar" className="btn-icon" />
               Registrar siniestro
             </Link>
             <Link to="/login" className="btn btn-secondary">
-              <img src="/image/list.png" alt="Consultar" className="btn-icon" />
+              <img src={list} alt="Consultar" className="btn-icon" />
               Consultar estado
             </Link>
           </div>

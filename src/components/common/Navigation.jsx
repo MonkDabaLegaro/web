@@ -1,11 +1,19 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { getUserType } from '../../utils/auth';
 
-const Navigation = ({ activePage }) => {
-  const navItems = [
-    { key: 'inicio', label: 'Inicio', href: '#' },
-    { key: 'ingreso', label: 'Ingreso de Siniestro', href: '#' },
-    { key: 'consulta', label: 'Consulta de Estado', href: '#' },
-    { key: 'reportes', label: 'Reportes', href: '#' }
+const Navigation = () => {
+  const location = useLocation();
+  const userType = getUserType();
+
+  const navItems = userType === 'admin' ? [
+    { key: 'admin', label: 'Inicio', path: '/admin' },
+    { key: 'ingreso', label: 'Ingreso de Siniestro', path: '/ingreso' },
+    { key: 'consulta', label: 'Consulta de Estado', path: '/consulta' },
+    { key: 'reporte', label: 'Reportes', path: '/reporte' }
+  ] : [
+    { key: 'cliente', label: 'Inicio', path: '/cliente' },
+    { key: 'consulta', label: 'Consulta de Estado', path: '/consulta' }
   ];
 
   return (
@@ -13,12 +21,12 @@ const Navigation = ({ activePage }) => {
       <ul>
         {navItems.map((item) => (
           <li key={item.key}>
-            <a
-              href={item.href}
-              className={activePage === item.key ? 'active' : ''}
+            <Link
+              to={item.path}
+              className={location.pathname === item.path ? 'active' : ''}
             >
               {item.label}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

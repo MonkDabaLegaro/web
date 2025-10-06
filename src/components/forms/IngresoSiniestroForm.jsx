@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { siniestroManager } from '../../service/siniestroService';
+import { validarRUT } from '../../utils/validators';
 import Alert from '../common/Alert';
-import folderIcon from '../../image/folder.png'; // ← Importaciones
+import folderIcon from '../../image/folder.png';
 import checkmarkIcon from '../../image/Checkmark.png';
 import listIcon from '../../image/list.png';
 
@@ -28,25 +30,51 @@ const IngresoSiniestroForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setAlert({ 
-      message: 'Siniestro registrado exitosamente con ID: 123. Liquidador asignado: María González', 
-      type: 'success' 
-    });
-    
-    setFormData({
-      rut: '',
-      nombreCliente: '',
-      poliza: '',
-      patente: '',
-      marca: '',
-      modelo: '',
-      tipoDanio: '',
-      tipoVehiculo: '',
-      email: '',
-      telefono: ''
-    });
+
+    if (!validarRUT(formData.rut)) {
+      setAlert({
+        message: 'RUT inválido. Formato esperado: 12345678-9',
+        type: 'error'
+      });
+      return;
+    }
+
+    try {
+      const siniestroData = {
+        rut: formData.rut,
+        numeroPoliza: formData.poliza,
+        tipoSeguro: formData.tipoDanio,
+        vehiculo: `${formData.marca} ${formData.modelo} - ${formData.patente}`,
+        descripcion: `Cliente: ${formData.nombreCliente}, Email: ${formData.email}, Teléfono: ${formData.telefono}, Tipo: ${formData.tipoVehiculo}`
+      };
+
+      const resultado = await siniestroManager.crearSiniestro(siniestroData);
+
+      setAlert({
+        message: `Siniestro registrado exitosamente. Liquidador asignado: ${resultado.liquidador}`,
+        type: 'success'
+      });
+
+      setFormData({
+        rut: '',
+        nombreCliente: '',
+        poliza: '',
+        patente: '',
+        marca: '',
+        modelo: '',
+        tipoDanio: '',
+        tipoVehiculo: '',
+        email: '',
+        telefono: ''
+      });
+    } catch (error) {
+      setAlert({
+        message: 'Error al registrar el siniestro: ' + error.message,
+        type: 'error'
+      });
+    }
   };
 
   const handleReset = () => {

@@ -3,6 +3,9 @@ import Header from '../components/common/Header';
 import Navigation from '../components/common/Navigation';
 import { siniestroManager } from '../service/siniestroService';
 import { validarRUT } from '../utils/validators';
+import list from '../image/list.png';
+import folder from '../image/folder.png';
+import checkmark from '../image/Checkmark.png';
 
 export default function Consulta() {
   const [formData, setFormData] = useState({
@@ -92,7 +95,7 @@ export default function Consulta() {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn btn-primary">
-                <img src="/image/list.png" alt="Consultar" className="btn-icon" />
+                <img src={list} alt="Consultar" className="btn-icon" />
                 Consultar
               </button>
             </div>
@@ -105,21 +108,21 @@ export default function Consulta() {
               <div className="progress-bar">
                 <div className={`progress-step ${getStepClass(siniestro.estado, 1)}`}>
                   <div className="step-circle">
-                    <img src="/image/folder.png" alt="Ingresado" className="step-icon" />
+                    <img src={folder} alt="Ingresado" className="step-icon" />
                   </div>
                   <span>Ingresado</span>
                 </div>
                 <div className={`progress-line ${getStepClass(siniestro.estado, 2)}`}></div>
                 <div className={`progress-step ${getStepClass(siniestro.estado, 2)}`}>
                   <div className="step-circle">
-                    <img src="/image/list.png" alt="En Evaluación" className="step-icon" />
+                    <img src={list} alt="En Evaluación" className="step-icon" />
                   </div>
                   <span>En Evaluación</span>
                 </div>
                 <div className={`progress-line ${getStepClass(siniestro.estado, 3)}`}></div>
                 <div className={`progress-step ${getStepClass(siniestro.estado, 3)}`}>
                   <div className="step-circle">
-                    <img src="/image/Checkmark.png" alt="Finalizado" className="step-icon" />
+                    <img src={checkmark} alt="Finalizado" className="step-icon" />
                   </div>
                   <span>Finalizado</span>
                 </div>
@@ -128,17 +131,17 @@ export default function Consulta() {
 
             <div className="details-container">
               <div className="detail-item">
-                <img src="/image/folder.png" alt="Grúa" className="detail-icon" />
+                <img src={folder} alt="Grúa" className="detail-icon" />
                 <span className="detail-label">Grúa</span>
                 <span className="detail-value">{siniestro.grua}</span>
               </div>
               <div className="detail-item">
-                <img src="/image/list.png" alt="Taller" className="detail-icon" />
+                <img src={list} alt="Taller" className="detail-icon" />
                 <span className="detail-label">Taller</span>
                 <span className="detail-value">{siniestro.taller}</span>
               </div>
               <div className="detail-item">
-                <img src="/image/Checkmark.png" alt="Liquidador" className="detail-icon" />
+                <img src={checkmark} alt="Liquidador" className="detail-icon" />
                 <span className="detail-label">Liquidador</span>
                 <span className="detail-value">{siniestro.liquidador}</span>
               </div>

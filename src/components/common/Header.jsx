@@ -1,9 +1,14 @@
 import React from 'react';
-import logo from '../../image/logo.png'; // ← Importación directa
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../../utils/auth';
+import logo from '../../image/logo.png';
 
 const Header = () => {
+  const navigate = useNavigate();
+
   const handleLogout = () => {
-    console.log('Cerrando sesión...');
+    logout();
+    navigate('/');
   };
 
   return (
