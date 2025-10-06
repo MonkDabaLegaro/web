@@ -1,61 +1,94 @@
+import { supabase } from './supabase';
+
 class SiniestroManager {
-  constructor() {
-    this.siniestros = this.loadSiniestros();
-    this.nextId = this.getNextId();
-  }
-
-  loadSiniestros() {
-    const stored = localStorage.getItem('siniestros');
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  saveSiniestros() {
-    localStorage.setItem('siniestros', JSON.stringify(this.siniestros));
-  }
-
-  getNextId() {
-    if (this.siniestros.length === 0) return 1;
-    return Math.max(...this.siniestros.map(s => s.id)) + 1;
-  }
-
-  crearSiniestro(datos) {
+  async crearSiniestro(datos) {
     const nuevoSiniestro = {
-      id: this.nextId++,
-      ...datos,
-      fechaRegistro: new Date().toISOString(),
+      rut: datos.rut,
+      numero_poliza: datos.numeroPoliza,
+      tipo_seguro: datos.tipoSeguro,
+      vehiculo: datos.vehiculo,
+      descripcion: datos.descripcion || '',
       estado: 'Ingresado',
       liquidador: this.asignarLiquidador(),
       grua: this.asignarGrua(),
-      taller: this.asignarTaller()
+      taller: this.asignarTaller(),
+      fecha_registro: new Date().toISOString(),
+      fecha_actualizacion: new Date().toISOString()
     };
 
-    this.siniestros.push(nuevoSiniestro);
-    this.saveSiniestros();
+    const { data, error } = await supabase
+      .from('siniestros')
+      .insert([nuevoSiniestro])
+      .select()
+      .single();
 
-    return nuevoSiniestro;
+    if (error) {
+      console.error('Error al crear siniestro:', error);
+      throw error;
+    }
+
+    return data;
   }
 
-  buscarSiniestro(rut, poliza) {
-    return this.siniestros.find(s => {
-      const rutMatch = !rut || s.rut === rut;
-      const polizaMatch = !poliza || s.numeroPoliza === poliza;
-      return rutMatch && polizaMatch;
-    });
+  async buscarSiniestro(rut, poliza) {
+    let query = supabase.from('siniestros').select('*');
+
+    if (rut) {
+      query = query.eq('rut', rut);
+    }
+    if (poliza) {
+      query = query.eq('numero_poliza', poliza);
+    }
+
+    const { data, error } = await query.maybeSingle();
+
+    if (error) {
+      console.error('Error al buscar siniestro:', error);
+      throw error;
+    }
+
+    return data;
   }
 
-  buscarSiniestros(criterios) {
-    return this.siniestros.filter(s => {
-      const rutMatch = !criterios.rut || s.rut.includes(criterios.rut);
-      const polizaMatch = !criterios.poliza || s.numeroPoliza.includes(criterios.poliza);
-      const estadoMatch = !criterios.estado || s.estado === criterios.estado;
-      const tipoMatch = !criterios.tipo || s.tipoSeguro === criterios.tipo;
+  async buscarSiniestros(criterios) {
+    let query = supabase.from('siniestros').select('*');
 
-      return rutMatch && polizaMatch && estadoMatch && tipoMatch;
-    });
+    if (criterios.rut) {
+      query = query.ilike('rut', `%${criterios.rut}%`);
+    }
+    if (criterios.poliza) {
+      query = query.ilike('numero_poliza', `%${criterios.poliza}%`);
+    }
+    if (criterios.estado) {
+      query = query.eq('estado', criterios.estado);
+    }
+    if (criterios.tipo) {
+      query = query.eq('tipo_seguro', criterios.tipo);
+    }
+
+    const { data, error } = await query.order('fecha_registro', { ascending: false });
+
+    if (error) {
+      console.error('Error al buscar siniestros:', error);
+      throw error;
+    }
+
+    return data || [];
   }
 
-  obtenerSiniestro(id) {
-    return this.siniestros.find(s => s.id === id);
+  async obtenerSiniestro(id) {
+    const { data, error } = await supabase
+      .from('siniestros')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error al obtener siniestro:', error);
+      throw error;
+    }
+
+    return data;
   }
 
   asignarLiquidador() {
@@ -92,23 +125,47 @@ class SiniestroManager {
     return talleres[Math.floor(Math.random() * talleres.length)];
   }
 
-  actualizarEstado(id, nuevoEstado) {
-    const siniestro = this.siniestros.find(s => s.id === id);
-    if (siniestro) {
-      siniestro.estado = nuevoEstado;
-      siniestro.fechaActualizacion = new Date().toISOString();
-      this.saveSiniestros();
-      return true;
+  async actualizarEstado(id, nuevoEstado) {
+    const { data, error } = await supabase
+      .from('siniestros')
+      .update({
+        estado: nuevoEstado,
+        fecha_actualizacion: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error al actualizar estado:', error);
+      throw error;
     }
-    return false;
+
+    return data;
   }
 
-  getEstadisticas() {
-    const total = this.siniestros.length;
-    const activos = this.siniestros.filter(s => s.estado !== 'Finalizado').length;
-    const finalizados = this.siniestros.filter(s => s.estado === 'Finalizado').length;
-    const enEvaluacion = this.siniestros.filter(s => s.estado === 'En Evaluación').length;
-    const ingresados = this.siniestros.filter(s => s.estado === 'Ingresado').length;
+  async getEstadisticas() {
+    const { data, error } = await supabase
+      .from('siniestros')
+      .select('estado');
+
+    if (error) {
+      console.error('Error al obtener estadísticas:', error);
+      return {
+        total: 0,
+        activos: 0,
+        finalizados: 0,
+        enEvaluacion: 0,
+        ingresados: 0
+      };
+    }
+
+    const siniestros = data || [];
+    const total = siniestros.length;
+    const activos = siniestros.filter(s => s.estado === 'Activo').length;
+    const finalizados = siniestros.filter(s => s.estado === 'Finalizado').length;
+    const enEvaluacion = siniestros.filter(s => s.estado === 'En Evaluación').length;
+    const ingresados = siniestros.filter(s => s.estado === 'Ingresado').length;
 
     return {
       total,
@@ -119,18 +176,36 @@ class SiniestroManager {
     };
   }
 
-  getEstadisticasPorTipo() {
+  async getEstadisticasPorTipo() {
+    const { data, error } = await supabase
+      .from('siniestros')
+      .select('tipo_seguro');
+
+    if (error) {
+      console.error('Error al obtener estadísticas por tipo:', error);
+      return {};
+    }
+
     const tipos = {};
-    this.siniestros.forEach(s => {
-      tipos[s.tipoSeguro] = (tipos[s.tipoSeguro] || 0) + 1;
+    (data || []).forEach(s => {
+      tipos[s.tipo_seguro] = (tipos[s.tipo_seguro] || 0) + 1;
     });
     return tipos;
   }
 
-  getEstadisticasPorLiquidador() {
+  async getEstadisticasPorLiquidador() {
+    const { data, error } = await supabase
+      .from('siniestros')
+      .select('liquidador, estado');
+
+    if (error) {
+      console.error('Error al obtener estadísticas por liquidador:', error);
+      return {};
+    }
+
     const liquidadores = {};
 
-    this.siniestros.forEach(s => {
+    (data || []).forEach(s => {
       if (!liquidadores[s.liquidador]) {
         liquidadores[s.liquidador] = {
           total: 0,
@@ -153,18 +228,28 @@ class SiniestroManager {
         case 'Ingresado':
           liquidadores[s.liquidador].ingresados++;
           break;
-        default:
+        case 'Activo':
           liquidadores[s.liquidador].activos++;
+          break;
       }
     });
 
     return liquidadores;
   }
 
-  getSiniestrosRecientes(limite = 5) {
-    return this.siniestros
-      .sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro))
-      .slice(0, limite);
+  async getSiniestrosRecientes(limite = 5) {
+    const { data, error } = await supabase
+      .from('siniestros')
+      .select('*')
+      .order('fecha_registro', { ascending: false })
+      .limit(limite);
+
+    if (error) {
+      console.error('Error al obtener siniestros recientes:', error);
+      return [];
+    }
+
+    return data || [];
   }
 }
 

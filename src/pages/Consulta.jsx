@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Header from '../components/Header';
-import Navigation from '../components/Navigation';
-import { siniestroManager } from '../services/siniestroService';
+import Header from '../components/common/Header';
+import Navigation from '../components/common/Navigation';
+import { siniestroManager } from '../service/siniestroService';
 import { validarRUT } from '../utils/validators';
 
 export default function Consulta() {
@@ -17,7 +17,7 @@ export default function Consulta() {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validarRUT(formData.rutConsulta)) {
@@ -25,19 +25,24 @@ export default function Consulta() {
       return;
     }
 
-    const resultado = siniestroManager.buscarSiniestro(
-      formData.rutConsulta,
-      formData.polizaConsulta
-    );
+    try {
+      const resultado = await siniestroManager.buscarSiniestro(
+        formData.rutConsulta,
+        formData.polizaConsulta
+      );
 
-    if (!resultado) {
-      alert('No se encontró información para el RUT y póliza ingresados');
+      if (!resultado) {
+        alert('No se encontró información para el RUT y póliza ingresados');
+        setShowResults(false);
+        return;
+      }
+
+      setSiniestro(resultado);
+      setShowResults(true);
+    } catch (error) {
+      alert('Error al buscar el siniestro: ' + error.message);
       setShowResults(false);
-      return;
     }
-
-    setSiniestro(resultado);
-    setShowResults(true);
   };
 
   const getStepClass = (estado, step) => {

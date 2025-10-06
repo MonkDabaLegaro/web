@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Navigation from '../components/Navigation';
+import Header from '../components/common/Header';
+import Navigation from '../components/common/Navigation';
 
 export default function Admin() {
   return (
