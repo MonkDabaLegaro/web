@@ -1,11 +1,52 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Navigation from '../components/common/Navigation';
+import { siniestroManager } from '../service/siniestroService';
 import list from '../image/list.png';
 import checkmark from '../image/Checkmark.png';
 import folder from '../image/folder.png';
 
 export default function Cliente() {
+  const [siniestros, setSiniestros] = useState([]);
+
+  useEffect(() => {
+    cargarSiniestros();
+  }, []);
+
+  const cargarSiniestros = async () => {
+    try {
+      const datos = await siniestroManager.obtenerSiniestros();
+      setSiniestros(datos.slice(0, 3));
+    } catch (error) {
+      console.error('Error al cargar siniestros:', error);
+    }
+  };
+
+  const formatearFecha = (fecha) => {
+    const ahora = new Date();
+    const fechaSiniestro = new Date(fecha);
+    const diferencia = Math.floor((ahora - fechaSiniestro) / 1000);
+
+    if (diferencia < 60) return 'Hace un momento';
+    if (diferencia < 3600) return `Hace ${Math.floor(diferencia / 60)} minutos`;
+    if (diferencia < 86400) return `Hace ${Math.floor(diferencia / 3600)} horas`;
+    return `Hace ${Math.floor(diferencia / 86400)} días`;
+  };
+
+  const getIconoPorEstado = (estado) => {
+    switch (estado) {
+      case 'Ingresado':
+        return folder;
+      case 'En Evaluación':
+        return list;
+      case 'Finalizado':
+        return checkmark;
+      default:
+        return folder;
+    }
+  };
+
   return (
     <>
       <Header title="Portal del Cliente" />
@@ -49,19 +90,23 @@ export default function Cliente() {
           </div>
         </div>
 
-        <div className="actions-section">
-          <h3>¿Qué necesitas hacer?</h3>
-          <div className="action-cards">
-            <Link to="/consulta" className="action-card">
-              <img src={list} alt="Consultar" className="action-icon" />
-              <h4>Consultar Estado</h4>
-              <p>Revisa el progreso de tu siniestro</p>
-            </Link>
-            <div className="action-card" style={{ cursor: 'pointer' }}>
-              <img src={folder} alt="Contacto" className="action-icon" />
-              <h4>Contactar Soporte</h4>
-              <p>Habla con nuestro equipo de atención</p>
-            </div>
+        <div className="recent-activity">
+          <h3>Actividad Reciente</h3>
+          <div className="activity-list">
+            {siniestros.length === 0 ? (
+              <p className="no-data">No hay actividad reciente</p>
+            ) : (
+              siniestros.map((siniestro) => (
+                <div key={siniestro.id} className="activity-item">
+                  <img src={getIconoPorEstado(siniestro.estado)} alt={siniestro.estado} className="activity-icon" />
+                  <div className="activity-content">
+                    <p><strong>{siniestro.estado}</strong></p>
+                    <small>RUT: {siniestro.rut} - Póliza: {siniestro.numeroPoliza}</small>
+                    <span className="activity-time">{formatearFecha(siniestro.fechaCreacion)}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

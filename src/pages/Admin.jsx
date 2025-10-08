@@ -1,12 +1,53 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Navigation from '../components/common/Navigation';
+import { siniestroManager } from '../service/siniestroService';
 import folder from '../image/folder.png';
 import checkmark from '../image/Checkmark.png';
 import yellowCheckMark from '../image/YellowCheckMark.png';
 import list from '../image/list.png';
 
 export default function Admin() {
+  const [siniestros, setSiniestros] = useState([]);
+
+  useEffect(() => {
+    cargarSiniestros();
+  }, []);
+
+  const cargarSiniestros = async () => {
+    try {
+      const datos = await siniestroManager.obtenerSiniestros();
+      setSiniestros(datos.slice(0, 5));
+    } catch (error) {
+      console.error('Error al cargar siniestros:', error);
+    }
+  };
+
+  const formatearFecha = (fecha) => {
+    const ahora = new Date();
+    const fechaSiniestro = new Date(fecha);
+    const diferencia = Math.floor((ahora - fechaSiniestro) / 1000);
+
+    if (diferencia < 60) return 'Hace un momento';
+    if (diferencia < 3600) return `Hace ${Math.floor(diferencia / 60)} minutos`;
+    if (diferencia < 86400) return `Hace ${Math.floor(diferencia / 3600)} horas`;
+    return `Hace ${Math.floor(diferencia / 86400)} días`;
+  };
+
+  const getIconoPorEstado = (estado) => {
+    switch (estado) {
+      case 'Ingresado':
+        return folder;
+      case 'En Evaluación':
+        return list;
+      case 'Finalizado':
+        return checkmark;
+      default:
+        return folder;
+    }
+  };
+
   return (
     <>
       <Header title="Panel Administrador" />
@@ -64,51 +105,23 @@ export default function Admin() {
           </div>
         </div>
 
-        <div className="quick-actions">
-          <h3>Acciones Rápidas</h3>
-          <div className="action-buttons">
-            <Link to="/ingreso" className="action-btn">
-              <img src={folder} alt="Nuevo" className="action-icon" />
-              <span>Nuevo Siniestro</span>
-            </Link>
-            <Link to="/consulta" className="action-btn">
-              <img src={list} alt="Consultar" className="action-icon" />
-              <span>Consultar Estado</span>
-            </Link>
-            <Link to="/reporte" className="action-btn">
-              <img src={checkmark} alt="Reportes" className="action-icon" />
-              <span>Ver Reportes</span>
-            </Link>
-          </div>
-        </div>
-
         <div className="recent-activity">
           <h3>Actividad Reciente</h3>
           <div className="activity-list">
-            <div className="activity-item">
-              <img src={folder} alt="Nuevo" className="activity-icon" />
-              <div className="activity-content">
-                <p><strong>Nuevo siniestro registrado</strong></p>
-                <small>RUT: 12.345.678-9 - Póliza: POL123</small>
-                <span className="activity-time">Hace 15 minutos</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <img src={list} alt="Proceso" className="activity-icon" />
-              <div className="activity-content">
-                <p><strong>Siniestro en evaluación</strong></p>
-                <small>Asignado a liquidador María González</small>
-                <span className="activity-time">Hace 1 hora</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <img src={checkmark} alt="Completado" className="activity-icon" />
-              <div className="activity-content">
-                <p><strong>Siniestro finalizado</strong></p>
-                <small>Vehículo entregado al cliente</small>
-                <span className="activity-time">Hace 2 horas</span>
-              </div>
-            </div>
+            {siniestros.length === 0 ? (
+              <p className="no-data">No hay actividad reciente</p>
+            ) : (
+              siniestros.map((siniestro) => (
+                <div key={siniestro.id} className="activity-item">
+                  <img src={getIconoPorEstado(siniestro.estado)} alt={siniestro.estado} className="activity-icon" />
+                  <div className="activity-content">
+                    <p><strong>{siniestro.estado}</strong></p>
+                    <small>RUT: {siniestro.rut} - Póliza: {siniestro.numeroPoliza}</small>
+                    <span className="activity-time">{formatearFecha(siniestro.fechaCreacion)}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </main>
