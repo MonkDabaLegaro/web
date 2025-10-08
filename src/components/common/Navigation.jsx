@@ -13,6 +13,7 @@ const Navigation = () => {
     { key: 'reporte', label: 'Reportes', path: '/reporte' }
   ] : [
     { key: 'cliente', label: 'Inicio', path: '/cliente' },
+    { key: 'ingreso', label: 'Ingreso de Siniestro', path: '/ingreso' },
     { key: 'consulta', label: 'Consulta de Estado', path: '/consulta' }
   ];
 

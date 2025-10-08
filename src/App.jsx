@@ -45,7 +45,7 @@ function App() {
         <Route
           path="/ingreso"
           element={
-            <ProtectedRoute allowedUserTypes={['admin']}>
+            <ProtectedRoute allowedUserTypes={['admin', 'cliente']}>
               <Ingreso />
             </ProtectedRoute>
           }
