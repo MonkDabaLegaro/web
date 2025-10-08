@@ -1,5 +1,6 @@
 export const AUTH_STORAGE_KEY = 'isLoggedIn';
 export const USER_TYPE_KEY = 'userType';
+export const USERNAME_KEY = 'username';
 
 export function isAuthenticated() {
   return localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
@@ -7,6 +8,10 @@ export function isAuthenticated() {
 
 export function getUserType() {
   return localStorage.getItem(USER_TYPE_KEY);
+}
+
+export function getUsername() {
+  return localStorage.getItem(USERNAME_KEY);
 }
 
 export function login(username, password) {
@@ -18,10 +23,12 @@ export function login(username, password) {
   if (username === adminUser && password === adminPass) {
     localStorage.setItem(AUTH_STORAGE_KEY, 'true');
     localStorage.setItem(USER_TYPE_KEY, 'admin');
+    localStorage.setItem(USERNAME_KEY, 'Admin');
     return { success: true, userType: 'admin' };
   } else if (username === clientUser && password === clientPass) {
     localStorage.setItem(AUTH_STORAGE_KEY, 'true');
     localStorage.setItem(USER_TYPE_KEY, 'cliente');
+    localStorage.setItem(USERNAME_KEY, 'Cliente');
     return { success: true, userType: 'cliente' };
   }
 
@@ -31,4 +38,5 @@ export function login(username, password) {
 export function logout() {
   localStorage.removeItem(AUTH_STORAGE_KEY);
   localStorage.removeItem(USER_TYPE_KEY);
+  localStorage.removeItem(USERNAME_KEY);
 }
