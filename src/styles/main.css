@@ -54,7 +54,7 @@ body {
   gap: 1rem;
 }
 
-.btn-logout {
+.btn-logout, .btn-login {
   background: rgba(255,255,255,0.2);
   color: white;
   border: 1px solid rgba(255,255,255,0.3);
@@ -62,9 +62,12 @@ body {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
-.btn-logout:hover {
+.btn-logout:hover, .btn-login:hover {
   background: rgba(255,255,255,0.3);
   transform: translateY(-1px);
 }

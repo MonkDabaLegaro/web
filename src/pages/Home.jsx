@@ -3,8 +3,6 @@ import logo from '../image/logo.png';
 import checkmark from '../image/Checkmark.png';
 import chile from '../image/Chile.png';
 import clock from '../image/clock.png';
-import folder from '../image/folder.png';
-import list from '../image/list.png';
 
 export default function Home() {
   return (
@@ -13,8 +11,11 @@ export default function Home() {
         <div className="header-content">
           <div className="header-logo">
             <img src={logo} alt="Logo" className="logo-image" />
+            <h1>Sistema de Asistencia Vehicular</h1>
           </div>
-          <h1>Sistema de Asistencia Vehicular</h1>
+          <Link to="/login" className="btn-login">
+            Iniciar Sesión
+          </Link>
         </div>
       </header>
 
@@ -38,16 +39,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="btn-group">
-            <Link to="/login" className="btn btn-primary">
-              <img src={folder} alt="Registrar" className="btn-icon" />
-              Registrar siniestro
-            </Link>
-            <Link to="/login" className="btn btn-secondary">
-              <img src={list} alt="Consultar" className="btn-icon" />
-              Consultar estado
-            </Link>
-          </div>
         </div>
       </main>
     </>
