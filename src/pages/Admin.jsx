@@ -10,12 +10,14 @@ import list from '../image/list.png';
 
 export default function Admin() {
   const [siniestros, setSiniestros] = useState([]);
+  const [todosSiniestros, setTodosSiniestros] = useState([]);
   const [stats, setStats] = useState({
     activos: 0,
     completadosHoy: 0,
     gruasDisponibles: 0,
     talleresActivos: 0
   });
+  const [actualizando, setActualizando] = useState(null);
 
   useEffect(() => {
     cargarDatos();
@@ -25,6 +27,7 @@ export default function Admin() {
     try {
       const datos = await siniestroManager.obtenerSiniestros();
       setSiniestros(datos.slice(0, 5));
+      setTodosSiniestros(datos);
       calcularEstadisticas(datos);
     } catch (error) {
       console.error('Error al cargar siniestros:', error);
@@ -72,6 +75,29 @@ export default function Admin() {
       default:
         return folder;
     }
+  };
+
+  const actualizarEstadoSiniestro = async (id, nuevoEstado) => {
+    setActualizando(id);
+    try {
+      await siniestroManager.actualizarEstado(id, nuevoEstado);
+      await cargarDatos();
+    } catch (error) {
+      console.error('Error al actualizar estado:', error);
+      alert('Error al actualizar el estado del siniestro');
+    } finally {
+      setActualizando(null);
+    }
+  };
+
+  const formatearFechaCompleta = (fecha) => {
+    return new Date(fecha).toLocaleDateString('es-CL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -142,11 +168,58 @@ export default function Admin() {
                   <img src={getIconoPorEstado(siniestro.estado)} alt={siniestro.estado} className="activity-icon" />
                   <div className="activity-content">
                     <p><strong>{siniestro.estado}</strong></p>
-                    <small>RUT: {siniestro.rut} - Póliza: {siniestro.numeroPoliza}</small>
-                    <span className="activity-time">{formatearFecha(siniestro.fechaCreacion)}</span>
+                    <small>RUT: {siniestro.rut} - Póliza: {siniestro.numero_poliza}</small>
+                    <span className="activity-time">{formatearFecha(siniestro.fecha_registro)}</span>
                   </div>
                 </div>
               ))
+            )}
+          </div>
+        </div>
+
+        <div className="siniestros-management">
+          <h3>Gestión de Siniestros</h3>
+          <div className="table-container">
+            {todosSiniestros.length === 0 ? (
+              <p className="no-data">No hay siniestros registrados</p>
+            ) : (
+              <table className="siniestros-table">
+                <thead>
+                  <tr>
+                    <th>RUT</th>
+                    <th>Póliza</th>
+                    <th>Tipo Seguro</th>
+                    <th>Vehículo</th>
+                    <th>Liquidador</th>
+                    <th>Fecha Registro</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {todosSiniestros.map((siniestro) => (
+                    <tr key={siniestro.id}>
+                      <td>{siniestro.rut}</td>
+                      <td>{siniestro.numero_poliza}</td>
+                      <td>{siniestro.tipo_seguro}</td>
+                      <td>{siniestro.vehiculo}</td>
+                      <td>{siniestro.liquidador}</td>
+                      <td>{formatearFechaCompleta(siniestro.fecha_registro)}</td>
+                      <td>
+                        <select
+                          value={siniestro.estado}
+                          onChange={(e) => actualizarEstadoSiniestro(siniestro.id, e.target.value)}
+                          disabled={actualizando === siniestro.id}
+                          className="estado-select"
+                        >
+                          <option value="Ingresado">Ingresado</option>
+                          <option value="En Evaluación">En Evaluación</option>
+                          <option value="Finalizado">Finalizado</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         </div>
