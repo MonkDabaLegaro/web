@@ -10,44 +10,18 @@ import list from '../image/list.png';
 
 export default function Admin() {
   const [siniestros, setSiniestros] = useState([]);
-  const [stats, setStats] = useState({
-    activos: 0,
-    completadosHoy: 0,
-    gruasDisponibles: 0,
-    talleresActivos: 0
-  });
 
   useEffect(() => {
-    cargarDatos();
+    cargarSiniestros();
   }, []);
 
-  const cargarDatos = async () => {
+  const cargarSiniestros = async () => {
     try {
       const datos = await siniestroManager.obtenerSiniestros();
       setSiniestros(datos.slice(0, 5));
-      calcularEstadisticas(datos);
     } catch (error) {
       console.error('Error al cargar siniestros:', error);
     }
-  };
-
-  const calcularEstadisticas = (datos) => {
-    const activos = datos.filter(s => s.estado === 'Ingresado' || s.estado === 'En Evaluación').length;
-
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const completadosHoy = datos.filter(s => {
-      const fecha = new Date(s.fechaCreacion);
-      fecha.setHours(0, 0, 0, 0);
-      return s.estado === 'Finalizado' && fecha.getTime() === hoy.getTime();
-    }).length;
-
-    setStats({
-      activos,
-      completadosHoy,
-      gruasDisponibles: 12,
-      talleresActivos: 6
-    });
   };
 
   const formatearFecha = (fecha) => {
@@ -92,7 +66,7 @@ export default function Admin() {
             </div>
             <div className="stat-content">
               <h3>Siniestros Activos</h3>
-              <p className="stat-number">{stats.activos}</p>
+              <p className="stat-number">24</p>
               <small>En proceso</small>
             </div>
           </div>
@@ -103,7 +77,7 @@ export default function Admin() {
             </div>
             <div className="stat-content">
               <h3>Completados Hoy</h3>
-              <p className="stat-number">{stats.completadosHoy}</p>
+              <p className="stat-number">8</p>
               <small>Finalizados</small>
             </div>
           </div>
@@ -114,7 +88,7 @@ export default function Admin() {
             </div>
             <div className="stat-content">
               <h3>Grúas Disponibles</h3>
-              <p className="stat-number">{stats.gruasDisponibles}</p>
+              <p className="stat-number">12</p>
               <small>En servicio</small>
             </div>
           </div>
@@ -125,7 +99,7 @@ export default function Admin() {
             </div>
             <div className="stat-content">
               <h3>Talleres Activos</h3>
-              <p className="stat-number">{stats.talleresActivos}</p>
+              <p className="stat-number">6</p>
               <small>Operativos</small>
             </div>
           </div>
