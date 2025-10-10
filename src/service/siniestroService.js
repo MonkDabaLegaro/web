@@ -251,20 +251,6 @@ class SiniestroManager {
 
     return data || [];
   }
-
-  async obtenerSiniestros() {
-    const { data, error } = await supabase
-      .from('siniestros')
-      .select('*')
-      .order('fecha_registro', { ascending: false });
-
-    if (error) {
-      console.error('Error al obtener siniestros:', error);
-      return [];
-    }
-
-    return data || [];
-  }
 }
 
 export const siniestroManager = new SiniestroManager();
