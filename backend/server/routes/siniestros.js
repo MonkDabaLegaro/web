@@ -4,12 +4,14 @@ import {
   crearSiniestro,
   buscarSiniestros,
   obtenerSiniestro,
-  actualizarEstado,
+  actualizarEstado
+} from '../controllers/siniestrosController.js';
+import {
   getEstadisticas,
   getEstadisticasPorTipo,
   getEstadisticasPorLiquidador,
   getSiniestrosRecientes
-} from '../controllers/siniestroController.js';
+} from '../controllers/estadisticasController.js';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();

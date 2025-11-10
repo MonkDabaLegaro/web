@@ -510,6 +510,7 @@ body {
 .btn-icon {
   width: 16px;
   height: 16px;
+  filter: none;
 }
 
 /* === RESPONSIVE === */
@@ -824,11 +825,7 @@ body {
   justify-content: flex-start;
 }
 
-.btn-icon {
-  width: 16px;
-  height: 16px;
-  filter: brightness(0) invert(1);
-}
+/* Removido filtro que convertía iconos a blanco para permitir colores naturales */
 
 .btn-secondary .btn-icon {
   filter: none;
@@ -841,6 +838,20 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
+}
+
+/* Contenedor para progress-bar y controles alineados */
+.progress-and-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.progress-and-controls .progress-bar {
+  flex: 1;
+  min-width: 300px;
 }
 
 .progress-bar {
@@ -1045,7 +1056,188 @@ body {
   .siniestro-card {
     padding: 1rem;
   }
-}/* === ESTILOS ESPECÍFICOS PARA REPORTES === */
+/* Controles de administrador para cambio de estado */
+.admin-controls {
+  background: #f0f4ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid #2563eb;
+}
+
+/* Controles de administrador inline (al lado de progress-bar) */
+.admin-controls-inline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.state-edit-container-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.state-display-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.current-state {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.state-edit-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.state-edit-container select {
+  padding: 0.5rem 1rem;
+  border: 2px solid #dbeafe;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: white;
+  min-width: 150px;
+  transition: border-color 0.3s ease;
+}
+
+.state-edit-container select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.state-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.state-display strong {
+  color: #2563eb;
+  font-size: 1.1rem;
+  margin-right: auto;
+}
+
+.btn-edit {
+  background: #f0f4ff;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-edit:hover {
+  background: #2563eb;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Icono específico para el botón de cambiar estado - color natural */
+.btn-edit .btn-icon,
+.yellow-checkmark-icon {
+  filter: none !important;
+  width: 16px;
+  height: 16px;
+}
+
+.btn-edit:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-text {
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.loading-text::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid #dbeafe;
+  border-top: 2px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+  .siniestro-card {
+    padding: 1rem;
+  }
+  
+  .admin-controls {
+    padding: 1rem;
+  }
+  
+  .state-edit-container,
+  .state-display {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .state-display strong {
+    margin-right: 0;
+    text-align: center;
+  }
+  
+  /* Responsive para progress-bar y controles inline */
+  .progress-and-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .progress-and-controls .progress-bar {
+    min-width: 100%;
+  }
+  
+  .admin-controls-inline {
+    justify-content: center;
+  }
+  
+  .state-edit-container-inline,
+  .state-display-inline {
+    justify-content: center;
+  }
+}
+
+/* === ESTILOS ESPECÍFICOS PARA REPORTES === */
 
 /* Dashboard de gráficos */
 .dashboard {

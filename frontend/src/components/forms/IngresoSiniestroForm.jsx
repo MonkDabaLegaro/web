@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Alert from '../common/Alert';
-import { siniestroManager } from '../../services/siniestroService';
+import { siniestroService } from '../../services/siniestroService';
 import { validarRUT } from '../../utils/validators';
 // Removed image imports - using URL paths instead
 
@@ -56,26 +56,36 @@ const IngresoSiniestroForm = () => {
         tipoSeguro: 'Automotriz' // Valor por defecto
       };
 
-      const nuevoSiniestro = await siniestroManager.crearSiniestro(datosSiniestro);
+      const result = await siniestroService.crearSiniestro(datosSiniestro);
 
-      setAlert({ 
-        message: `Siniestro registrado exitosamente con ID: ${nuevoSiniestro._id}. Liquidador asignado: ${nuevoSiniestro.liquidador}`, 
-        type: 'success' 
-      });
-      
-      // Limpiar formulario
-      setFormData({
-        rut: '',
-        nombreCliente: '',
-        poliza: '',
-        patente: '',
-        marca: '',
-        modelo: '',
-        tipoDanio: '',
-        tipoVehiculo: '',
-        email: '',
-        telefono: ''
-      });
+      if (result.success) {
+        const nuevoSiniestro = result.data;
+        setAlert({ 
+          message: `Siniestro registrado exitosamente con ID: ${nuevoSiniestro._id}. Liquidador asignado: ${nuevoSiniestro.liquidador}`, 
+          type: 'success' 
+        });
+        
+        // Disparar evento personalizado para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('siniestroCreado', { 
+          detail: nuevoSiniestro 
+        }));
+        
+        // Limpiar formulario
+        setFormData({
+          rut: '',
+          nombreCliente: '',
+          poliza: '',
+          patente: '',
+          marca: '',
+          modelo: '',
+          tipoDanio: '',
+          tipoVehiculo: '',
+          email: '',
+          telefono: ''
+        });
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       setAlert({ 
         message: 'Error al registrar el siniestro. Intente nuevamente.', 

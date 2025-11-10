@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
-import { siniestroManager } from '../services/siniestroService';
+import { siniestroService } from '../services/siniestroService';
 
 export default function Admin() {
   const [stats, setStats] = useState({
@@ -14,6 +14,18 @@ export default function Admin() {
 
   useEffect(() => {
     cargarDatos();
+    
+    // Escuchar eventos de nuevo siniestro
+    const handleNuevoSiniestro = () => {
+      cargarDatos(); // Recargar datos cuando se crea un nuevo siniestro
+    };
+    
+    window.addEventListener('siniestroCreado', handleNuevoSiniestro);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('siniestroCreado', handleNuevoSiniestro);
+    };
   }, []);
 
   const cargarDatos = async () => {
@@ -21,7 +33,7 @@ export default function Admin() {
       setLoading(true);
       
       // Obtener todos los siniestros
-      const todosSiniestros = await siniestroManager.getAllSiniestros();
+      const todosSiniestros = await siniestroService.getAllSiniestros();
       setSiniestros(todosSiniestros);
       
       // Calcular estadísticas básicas
