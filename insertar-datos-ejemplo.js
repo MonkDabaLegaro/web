@@ -6,10 +6,11 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Siniestro from './models/Siniestro.js';
+import readline from 'readline';
+import Siniestro from './backend/server/models/Siniestro.js';
 
 // Cargar variables de entorno
-dotenv.config();
+dotenv.config({ path: './backend/server/.env' });
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sistema_siniestros';
 
@@ -27,7 +28,7 @@ const siniestrosEjemplo = [
     telefono: '+56912345678',
     tipoSeguro: 'Automotriz',
     estado: 'En Evaluación',
-    liquidador: 'Carlos Mendoza',
+    liquidador: 'Pedro Martínez',
     grua: 'Servicio Norte',
     taller: 'Auto Fix S.A.',
     fechaRegistro: new Date('2024-11-01'),
@@ -46,7 +47,7 @@ const siniestrosEjemplo = [
     telefono: '+56987654321',
     tipoSeguro: 'Automotriz',
     estado: 'Finalizado',
-    liquidador: 'Ana Rodríguez',
+    liquidador: 'Carlos López',
     grua: 'Transporte Rápido',
     taller: 'Carros Car',
     fechaRegistro: new Date('2024-10-15'),
@@ -65,7 +66,7 @@ const siniestrosEjemplo = [
     telefono: '+56911223344',
     tipoSeguro: 'Automotriz',
     estado: 'Ingresado',
-    liquidador: 'Luis Fernández',
+    liquidador: 'Luis Rodríguez',
     grua: 'Grúa Express',
     taller: 'Taller Central',
     fechaRegistro: new Date('2024-11-08'),
@@ -84,7 +85,7 @@ const siniestrosEjemplo = [
     telefono: '+56955667788',
     tipoSeguro: 'Automotriz',
     estado: 'En Evaluación',
-    liquidador: 'Roberto Vega',
+    liquidador: 'Ana Silva',
     grua: 'Servicio 24/7',
     taller: 'Reparación Total',
     fechaRegistro: new Date('2024-11-07'),
@@ -103,7 +104,7 @@ const siniestrosEjemplo = [
     telefono: '+56933445566',
     tipoSeguro: 'Moto',
     estado: 'Ingresado',
-    liquidador: 'María Castro',
+    liquidador: 'Carmen Morales',
     grua: 'Auto Rescate',
     taller: 'Mecánica Rápida',
     fechaRegistro: new Date('2024-11-06'),
@@ -122,7 +123,7 @@ const siniestrosEjemplo = [
     telefono: '+56977889900',
     tipoSeguro: 'Automotriz',
     estado: 'Finalizado',
-    liquidador: 'Javier Silva',
+    liquidador: 'María González',
     grua: 'Grúa Rápida Sur',
     taller: 'Taller Sur Especializado',
     fechaRegistro: new Date('2024-10-20'),
@@ -141,7 +142,7 @@ const siniestrosEjemplo = [
     telefono: '+56911220033',
     tipoSeguro: 'Automotriz',
     estado: 'En Evaluación',
-    liquidador: 'Francisca Campos',
+    liquidador: 'Carlos López',
     grua: 'Grúa Central 24/7',
     taller: 'Auto Fix S.A.',
     fechaRegistro: new Date('2024-11-04'),
@@ -160,7 +161,7 @@ const siniestrosEjemplo = [
     telefono: '+56955660011',
     tipoSeguro: 'Automotriz',
     estado: 'Ingresado',
-    liquidador: 'Alejandro Torres',
+    liquidador: 'Pedro Martínez',
     grua: 'Grúa Oriente',
     taller: 'Taller Norte Premium',
     fechaRegistro: new Date('2024-11-09'),
@@ -170,17 +171,16 @@ const siniestrosEjemplo = [
 
 async function insertarDatosEjemplo() {
   try {
-    console.log('🔗 Conectando a MongoDB...');
+    console.log('Conectando a MongoDB...');
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Conectado a MongoDB exitosamente');
+    console.log('Conectado a MongoDB exitosamente');
 
     // Verificar si ya existen siniestros
     const countExistente = await Siniestro.countDocuments();
-    console.log(`📊 Total de siniestros existentes: ${countExistente}`);
+    console.log(`Total de siniestros existentes: ${countExistente}`);
 
     if (countExistente > 0) {
-      console.log('⚠️  Ya existen siniestros en la base de datos.');
-      const readline = require('readline');
+      console.log('Ya existen siniestros en la base de datos.');
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -194,31 +194,31 @@ async function insertarDatosEjemplo() {
       });
       
       if (respuesta !== 's' && respuesta !== 'si') {
-        console.log('🛑 Operación cancelada.');
+        console.log('Operación cancelada.');
         return;
       }
     }
 
     // Insertar siniestros de ejemplo
-    console.log('\n📝 Insertando siniestros de ejemplo...');
+    console.log('\nInsertando siniestros de ejemplo...');
     
     for (let i = 0; i < siniestrosEjemplo.length; i++) {
       const siniestro = new Siniestro(siniestrosEjemplo[i]);
       await siniestro.save();
-      console.log(`✅ Siniestro ${i + 1}/${siniestrosEjemplo.length} creado: ${siniestro.nombreCliente} (${siniestro.patente}) - ${siniestro.estado}`);
+      console.log(`Siniestro ${i + 1}/${siniestrosEjemplo.length} creado: ${siniestro.nombreCliente} (${siniestro.patente}) - ${siniestro.estado}`);
     }
 
     // Verificar inserción
     const nuevoCount = await Siniestro.countDocuments();
-    console.log(`\n🎉 ¡Datos de ejemplo insertados exitosamente!`);
-    console.log(`📊 Total de siniestros ahora: ${nuevoCount}`);
+    console.log(`\n¡Datos de ejemplo insertados exitosamente!`);
+    console.log(`Total de siniestros ahora: ${nuevoCount}`);
 
     // Mostrar estadísticas por estado
     const estados = await Siniestro.aggregate([
       { $group: { _id: '$estado', count: { $sum: 1 } } }
     ]);
 
-    console.log('\n📈 Estadísticas por estado:');
+    console.log('\nEstadísticas por estado:');
     estados.forEach(estado => {
       console.log(`   ${estado._id}: ${estado.count} siniestros`);
     });
@@ -228,22 +228,22 @@ async function insertarDatosEjemplo() {
       { $group: { _id: '$tipoDanio', count: { $sum: 1 } } }
     ]);
 
-    console.log('\n📊 Estadísticas por tipo de daño:');
+    console.log('\nEstadísticas por tipo de daño:');
     tiposDanio.forEach(tipo => {
       console.log(`   ${tipo._id}: ${tipo.count} siniestros`);
     });
 
-    console.log('\n🌐 Accede a tu aplicación:');
+    console.log('\nAccede a tu aplicación:');
     console.log(`   Frontend: http://localhost:5173`);
     console.log(`   Dashboard Admin: http://localhost:5173/admin`);
     console.log(`   Reportes: http://localhost:5173/reporte`);
 
   } catch (error) {
-    console.error('❌ Error al insertar datos de ejemplo:', error.message);
+    console.error('Error al insertar datos de ejemplo:', error.message);
     process.exit(1);
   } finally {
     await mongoose.connection.close();
-    console.log('\n🔌 Conexión a MongoDB cerrada');
+    console.log('\nConexión a MongoDB cerrada');
   }
 }
 

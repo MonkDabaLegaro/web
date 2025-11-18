@@ -42,10 +42,10 @@ echo Frontend:   http://localhost:5173
 echo.
 echo IMPORTANTE:
 echo - No cierres esta ventana hasta que hayas terminado de usar el sistema
-echo - Para cerrar el sistema, presiona Ctrl+C aquí o cierra las ventanas manualmente
+echo - Para cerrar el sistema, presiona Ctrl+C aqui o cierra las ventanas manualmente
 echo.
 echo Presiona cualquier tecla para minimizar esta ventana...
-echo (Los servicios seguirán ejecutándose en segundo plano)
+echo (Los servicios seguiran ejecutándose en segundo plano)
 pause >nul
 
 echo.
