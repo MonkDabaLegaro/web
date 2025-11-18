@@ -1,0 +1,5 @@
+[18/11/2025 17:16:34,84] Iniciando setup del sistema 
+[18/11/2025 17:16:34,84] Verificando permisos de escritura 
+[18/11/2025 17:16:34,85] [OK] Permisos de escritura verificados 
+[18/11/2025 17:16:34,87] Iniciando setup automatico del sistema 
+[18/11/2025 17:16:34,88] Verificando Node.js 

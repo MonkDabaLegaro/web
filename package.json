@@ -1,0 +1,10 @@
+{
+  "name": "sistema-siniestros",
+  "version": "1.0.0",
+  "description": "Sistema de control de siniestros",
+  "type": "module",
+  "dependencies": {
+    "mongoose": "^8.0.0",
+    "dotenv": "^16.0.0"
+  }
+}
